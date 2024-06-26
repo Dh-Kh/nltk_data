@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Body
 from fastapi.responses import RedirectResponse, JSONResponse
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.tag import pos_tag
-from typing import List, Dict, Tuple
+from typing import List, Dict
 from nltk import download, ne_chunk
 
 app = FastAPI()
@@ -11,6 +11,8 @@ download('punkt')
 download('averaged_perceptron_tagger')
 download('maxent_ne_chunker')
 download('words')
+download('universal_tagset')
+
 
     
 @app.post("/tokenize/")
@@ -35,7 +37,7 @@ async def tokenize(text_input: Dict[str, str] = Body(...), tokenize_type: str = 
             
         elif tokenize_type == "sent":
             
-            sent_tokens = sent_tokenize(text_input.values())
+            sent_tokens = sent_tokenize(text)
             
             return JSONResponse(content={
                 "result": sent_tokens
@@ -51,7 +53,7 @@ async def tokenize(text_input: Dict[str, str] = Body(...), tokenize_type: str = 
         raise HTTPException(status_code=500, detail=f"{str(e)}")
 
 @app.post("/postag/")
-async def postag(text_input:  Dict[str, str]) -> Dict[str, Tuple]:
+async def postag(text_input: Dict[str, str] = Body(...)) -> Dict[str, List[str]]:
     try:
         
         text = " ".join(text_input.values())
@@ -69,7 +71,7 @@ async def postag(text_input:  Dict[str, str]) -> Dict[str, Tuple]:
 
 
 @app.post("/ner/")
-async def ner(text_input:  Dict[str, str]) -> Dict[str, Tuple]:
+async def ner(text_input:  Dict[str, str] = Body(...)) -> Dict[str, List[str]]:
     try:
         
         text = " ".join(text_input.values())
