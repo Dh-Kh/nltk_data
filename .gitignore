@@ -1,0 +1,8 @@
+venv
+__pycache__
+chunkers
+corpora
+taggers
+tokenizers
+
+
